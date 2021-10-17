@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#info1 {
+	position: absolute;
+	top: 10px;
+	width: 100%;
+	padding: absolute;
+	text-align: center;
+	font-size: 10px;
+	color: #000000
+}
+
+#info2 {
+	position: absolute;
+	top: 90px;
+	width: 100%;
+	padding: absolute;
+	text-align: center;
+	font-size: 10px;
+	color: #000000
+}
+
+.Button {
+	top: 1px;
+	height: 25px;
+	width: auto;
+	background-color: #E6E6FA;
+}
+
+.start {
+	border-radius: 50%;
+	width: 50px;
+	padding: 5px;
+	font-size: 2px;
+	color: green
+}
+
+.reset {	
+	border-radius: 50%;
+	width: 50px;
+	padding: 5px;
+	font-size: 2px;
+	color: blue
+}
+.setTime {
+	
+}
+
+body {
+	overflow: hidden
+}
+</style>
+</head>
+<body>
+
+<audio id=ring auto loop>
+  <source src="ring.mp3" type="audio/mp3">
+</audio>
+
+<div id=info1>
+	<h1>Homework 1 - Clock</h1>
+	<button id=timeSet10 class="Button">+10</button>
+	<button id=timeSet1 class="Button">+1</button>	
+</div>
+
+<div id=info2>
+	<button id=start class="Button start">Start</button>
+	<button id=reset class="Button reset">Reset</button>
+	<button id=quarzt class="Button" style="border-radius: 50%; width: 100px; color: purple">Quarzt Style</button>
+</div>
+
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script>
+var renderer, scene, camera;
+var clockface, pointer, dt;
+var angle = 0, clock;
+var startTurn = false, 
+	restartTurn = false, 
+	setTime10 = false, 
+	setTime1 = false,
+	quar = false;
+var timesUp = document.getElementById("ring");
+
+$(`#start`).click(function() {
+  startTurn = !startTurn;
+})
+$(`#reset`).click(function() {
+  restartTurn = !restartTurn;
+})
+$(`#timeSet10`).click(function() {
+  setTime10 = !setTime10;
+})
+$(`#timeSet1`).click(function() {
+  setTime1 = !setTime1;
+})
+$(`#quarzt`).click(function() {
+  quar = !quar;
+})
+
+
+init();
+animate();
+
+function init() {
+
+  renderer = new THREE.WebGLRenderer();
+  document.body.appendChild(renderer.domElement);
+  var width = window.innerWidth;
+  var height = window.innerHeight;
+  renderer.setSize(width, height);
+
+  renderer.setClearColor(0xE6E6FA);
+
+  scene = new THREE.Scene();
+  //var grid = new THREE.GridHelper(20, 20, 0xaaaa00, 0x333333);
+  //scene.add (grid);
+  //var axes = new THREE.AxesHelper (5);
+  //scene.add (axes);
+
+  camera = new THREE.PerspectiveCamera(35, width / height, 1, 100);
+  camera.position.z = 30;
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+  let controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  window.addEventListener('resize', onWindowResize, false);
+  /////////////////////////////////
+  needleGroup = new THREE.Group();
+  
+  pointer = new THREE.Mesh(new THREE.CircleGeometry(0.3, 32), new THREE.MeshBasicMaterial({
+    color: 0x8B00FF
+  }));
+  pointer.position.set(0, 5.3, 0.1);
+  
+  clockface = new THREE.Mesh(new THREE.CircleGeometry(6, 32), new THREE.MeshBasicMaterial({
+    color: 0xCCCCFF,
+	side: THREE.DoubleSide
+  }));
+  
+  needleGroup.add(pointer);
+  scene.add(clockface, needleGroup);
+
+  clock = new THREE.Clock();
+  clock.getDelta();
+}
+
+function onWindowResize() {
+
+  var width = window.innerWidth;
+  var height = window.innerHeight;
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+
+}
+
+function animate() {
+
+  dt = clock.getDelta();
+
+  if (restartTurn) {
+    restartTurn = !restartTurn;
+    startTurn = false;
+    angle = 0;
+  }
+
+  if (setTime10) {
+    angle += 2 * Math.PI / 6;
+    setTime10 = false;
+  }
+
+  if (setTime1) {
+    angle += 2 * Math.PI / 60;
+    setTime1 = false;
+  }
+  
+  if (angle<=0 && startTurn) {
+	startTurn = !startTurn;
+	angle = 0;
+	timesUp.play();
+  }
+  
+  if (startTurn) {  
+	if (quar){
+	  angle -= 2 * Math.PI / 60;
+	}else {
+	  angle -= 2 * Math.PI * dt / 60;
+	}
+  }
+  
+  pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
+  requestAnimationFrame(animate);
+  render();
+
+}
+
+function render() {
+
+  renderer.render(scene, camera);
+
+}
+
+</script>
+
+</body>
+</html>
