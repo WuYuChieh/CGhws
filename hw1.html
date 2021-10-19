@@ -147,17 +147,29 @@ function init() {
   /////////////////////////////////
   needleGroup = new THREE.Group();
   
-  pointer = new THREE.Mesh(new THREE.CircleGeometry(0.3, 32), new THREE.MeshBasicMaterial({
+  center = new THREE.Mesh(new THREE.DodecahedronGeometry(0.2, 10), new THREE.MeshBasicMaterial({
+    color: 0x8B00FF
+  })) 
+  needleGroup.add(center);
+  
+  pointer = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 5.5, 30), new THREE.MeshBasicMaterial({
     color: 0x8B00FF
   }));
-  pointer.position.set(0, 5.3, 0.1);
+  pointer.position.set(0, 2.75, 0);
+  needleGroup.add(pointer);
+  
+  pointerHead = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.5, 32), new THREE.MeshBasicMaterial({
+    color: 0x8B00FF
+  }))
+  pointerHead.position.set(0, 5.5, 0);
+  needleGroup.add(pointerHead);
   
   clockface = new THREE.Mesh(new THREE.CircleGeometry(6, 32), new THREE.MeshBasicMaterial({
     color: 0xCCCCFF,
 	side: THREE.DoubleSide
   }));
   
-  needleGroup.add(pointer);
+
   scene.add(clockface, needleGroup);
 
   clock = new THREE.Clock();
@@ -183,7 +195,8 @@ function quarztStyle() {
   if (startTurn) {
     angle -= 2 * Math.PI / 60;
   }
-  pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
+  //pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
+  needleGroup.rotation.z = -angle;
   setTimeout("quarztStyle()", 1000);
 }
 
@@ -238,7 +251,8 @@ function animate() {
 	  angle -= 2 * Math.PI * dt / 60;
 	}
   }
-  pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
+  //pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
+  needleGroup.rotation.z = -angle;
   requestAnimationFrame(animate);
   render();
 
