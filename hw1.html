@@ -55,14 +55,16 @@ body {
 </head>
 <body>
 
-<audio id=ring auto loop>
-  <source src="ring.mp3" type="audio/mp3">
+<audio id=ring>
+  <source src="ring.mp3" type="audio/mpeg">
 </audio>
 
 <div id=info1>
-	<h1>Homework 1 - Clock</h1>
-	<button id=timeSet10 class="Button">+10</button>
-	<button id=timeSet1 class="Button">+1</button>	
+	<h1>Homework 1 - Clock Timer</h1>
+	<button id=timeSetPlus10 class="Button">+10</button>
+	<button id=timeSetSub10 class="Button">-10</button>
+	<button id=timeSetPlus1 class="Button">+1</button>
+	<button id=timeSetSub1 class="Button">-1</button>
 </div>
 
 <div id=info2>
@@ -80,28 +82,41 @@ var renderer, scene, camera;
 var clockface, pointer, dt;
 var angle = 0, clock;
 var startTurn = false, 
-	restartTurn = false, 
-	setTime10 = false, 
-	setTime1 = false,
+	resetTurn = false, 
+	setTimePlus10 = false, 
+	setTimePlus1 = false,
+	setTimeSub10 = false, 
+	setTimeSub1 = false,
 	quar = false;
-var timesUp = document.getElementById("ring");
 
 $(`#start`).click(function() {
   startTurn = !startTurn;
+  if (startTurn)
+    $("#start").text ('Stop');
+  else
+	$("#start").text ('Start');
 })
 $(`#reset`).click(function() {
-  restartTurn = !restartTurn;
+  resetTurn = !resetTurn;
 })
-$(`#timeSet10`).click(function() {
-  setTime10 = !setTime10;
+$(`#timeSetPlus10`).click(function() {
+  setTimePlus10 = !setTimePlus10;
 })
-$(`#timeSet1`).click(function() {
-  setTime1 = !setTime1;
+$(`#timeSetPlus1`).click(function() {
+  setTimePlus1 = !setTimePlus1;
+})
+$(`#timeSetSub10`).click(function() {
+  setTimeSub10 = !setTimeSub10;
+})
+$(`#timeSetSub1`).click(function() {
+  setTimeSub1 = !setTimeSub1;
 })
 $(`#quarzt`).click(function() {
   quar = !quar;
+  if (quar) {
+    quarztStyle();
+  }
 })
-
 
 init();
 animate();
@@ -156,43 +171,73 @@ function onWindowResize() {
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
+}
 
+function quarztStyle() {
+  if (!quar)
+    return;
+  if (angle<0) {
+    angle = 0;
+    return;
+  }
+  if (startTurn) {
+    angle -= 2 * Math.PI / 60;
+  }
+  pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
+  setTimeout("quarztStyle()", 1000);
 }
 
 function animate() {
 
   dt = clock.getDelta();
 
-  if (restartTurn) {
-    restartTurn = !restartTurn;
+  if (resetTurn) {
+    resetTurn = !resetTurn;
     startTurn = false;
+	quar = false;
     angle = 0;
+	$("#start").text ('Start');
+	ring.load();
   }
 
-  if (setTime10) {
+  if (setTimePlus10) {
     angle += 2 * Math.PI / 6;
-    setTime10 = false;
+    setTimePlus10 = false;
+  }
+  
+  if (setTimeSub10) {
+    angle -= 2 * Math.PI / 6;
+    setTimeSub10 = false;
   }
 
-  if (setTime1) {
+  if (setTimePlus1) {
     angle += 2 * Math.PI / 60;
-    setTime1 = false;
+    setTimePlus1 = false;
+  }
+  
+  if (setTimeSub1) {
+    angle -= 2 * Math.PI / 60;
+    setTimeSub1 = false;
   }
   
   if (angle<=0 && startTurn) {
 	startTurn = !startTurn;
 	angle = 0;
-	timesUp.play();
+	$("#start").text ('Start');
+	setTimeout("alert('Time-up!')", 300)
+	ring.play();
   }
   
-  if (startTurn) {  
-	if (quar){
-	  angle -= 2 * Math.PI / 60;
-	}else {
+  if (quar)
+    $("#quarzt").text ('Sector');
+  else
+	$("#quarzt").text ('Quarzt Style');
+  
+  if (startTurn) {
+	if (!quar){
 	  angle -= 2 * Math.PI * dt / 60;
 	}
   }
-  
   pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
   requestAnimationFrame(animate);
   render();
