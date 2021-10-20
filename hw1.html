@@ -2,19 +2,9 @@
 <html>
 <head>
 <style>
-#info1 {
+#info {
 	position: absolute;
 	top: 10px;
-	width: 100%;
-	padding: absolute;
-	text-align: center;
-	font-size: 10px;
-	color: #000000
-}
-
-#info2 {
-	position: absolute;
-	top: 90px;
 	width: 100%;
 	padding: absolute;
 	text-align: center;
@@ -44,9 +34,6 @@
 	font-size: 2px;
 	color: blue
 }
-.setTime {
-	
-}
 
 body {
 	overflow: hidden
@@ -59,15 +46,10 @@ body {
   <source src="ring.mp3" type="audio/mpeg">
 </audio>
 
-<div id=info1>
-	<h1>Homework 1 - Clock Timer</h1>
-	<button id=timeSetPlus10 class="Button">+10</button>
-	<button id=timeSetSub10 class="Button">-10</button>
-	<button id=timeSetPlus1 class="Button">+1</button>
-	<button id=timeSetSub1 class="Button">-1</button>
-</div>
-
-<div id=info2>
+<div id=info>
+	<h1 style="color: #8B00FF">Homework 1 - Clock Timer</h1>
+	<button id=timeSetPlus10 class="Button" style="border-radius: 50%; width: 50px; color: white; background-color: green;">+10</button>
+	<button id=timeSetSub10 class="Button" style="border-radius: 50%; width: 50px; color: white; background-color: red;">-10</button>
 	<button id=start class="Button start">Start</button>
 	<button id=reset class="Button reset">Reset</button>
 	<button id=quarzt class="Button" style="border-radius: 50%; width: 100px; color: purple">Quarzt Style</button>
@@ -78,16 +60,28 @@ body {
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 
 <script>
+window.onmousedown = function(e) {
+	if (pressed[e.which]) return;
+	pressed[e.which] = e.timeStamp;
+};
+
+window.onmouseup = function(e) {
+	if (!pressed[e.which]) return;
+	duration = (e.timeStamp - pressed[e.which]) / 1000;
+	pressed[e.which] = 0;
+};
+
 var renderer, scene, camera;
 var clockface, pointer, dt;
-var angle = 0, clock;
+var angle = 0, duration, count = 0, clock;
 var startTurn = false, 
 	resetTurn = false, 
 	setTimePlus10 = false, 
-	setTimePlus1 = false,
 	setTimeSub10 = false, 
-	setTimeSub1 = false,
-	quar = false;
+	quar = false,
+	longReset = false;
+	ringing = false;
+var pressed = {};
 
 $(`#start`).click(function() {
   startTurn = !startTurn;
@@ -102,14 +96,8 @@ $(`#reset`).click(function() {
 $(`#timeSetPlus10`).click(function() {
   setTimePlus10 = !setTimePlus10;
 })
-$(`#timeSetPlus1`).click(function() {
-  setTimePlus1 = !setTimePlus1;
-})
 $(`#timeSetSub10`).click(function() {
   setTimeSub10 = !setTimeSub10;
-})
-$(`#timeSetSub1`).click(function() {
-  setTimeSub1 = !setTimeSub1;
 })
 $(`#quarzt`).click(function() {
   quar = !quar;
@@ -141,7 +129,7 @@ function init() {
   camera.position.z = 30;
   camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-  let controls = new THREE.OrbitControls(camera, renderer.domElement);
+  //let controls = new THREE.OrbitControls(camera, renderer.domElement);
 
   window.addEventListener('resize', onWindowResize, false);
   /////////////////////////////////
@@ -200,6 +188,15 @@ function quarztStyle() {
   setTimeout("quarztStyle()", 1000);
 }
 
+function longPushReset() {
+	startTurn = false;
+	angle = 0;
+	quar = false;
+	$("#start").text ('Start');
+	ring.load();
+	return;
+}
+
 function animate() {
 
   dt = clock.getDelta();
@@ -222,24 +219,23 @@ function animate() {
     angle -= 2 * Math.PI / 6;
     setTimeSub10 = false;
   }
-
-  if (setTimePlus1) {
-    angle += 2 * Math.PI / 60;
-    setTimePlus1 = false;
-  }
-  
-  if (setTimeSub1) {
-    angle -= 2 * Math.PI / 60;
-    setTimeSub1 = false;
-  }
   
   if (angle<=0 && startTurn) {
 	startTurn = !startTurn;
 	angle = 0;
 	$("#start").text ('Start');
-	setTimeout("alert('Time-up!')", 300)
-	ring.play();
-  }
+	//setTimeout("alert('Time-up!')", 300);
+	ringing = !ringing;
+  }  
+  
+  if (ringing) {
+	for (var count=1; count <=20; count++){
+		setTimeout(function() {
+			ring.play();
+		}, count*500);
+	}
+	ringing = false;
+}
   
   if (quar)
     $("#quarzt").text ('Sector');
@@ -251,6 +247,11 @@ function animate() {
 	  angle -= 2 * Math.PI * dt / 60;
 	}
   }
+  
+  if (duration > 2) {
+	longPushReset();
+  }
+  
   //pointer.position.set(5.3 * Math.sin(angle), 5.3 * Math.cos(angle), 0.1);
   needleGroup.rotation.z = -angle;
   requestAnimationFrame(animate);
