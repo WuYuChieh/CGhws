@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#info {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	padding: 10px;
+	text-align: center;
+	color: #004B97;
+}
+
+body {
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+<div id="info">
+	<h1>Homework 2 - Dynamic Drive, Rectangle-Circle Intersection, Dual Viewports</h1>
+</div>
+
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://raw.githack.com/jyunming-chen/tutsplus/master/js/KeyboardState.js"></script>
+
+<script>
+var camera, scene, renderer;
+var keyboard = new KeyboardState();
+var car;
+var clock;
+
+var pos = new THREE.Vector3(),
+	vel = new THREE.Vector3(),
+	force = new THREE.Vector3();
+var power, angle;
+
+init();
+animate();
+
+function init() {
+
+	clock = new THREE.Clock();
+
+	renderer = new THREE.WebGLRenderer();
+	document.body.appendChild(renderer.domElement);
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	renderer.setSize(width, height);
+
+	renderer.setClearColor(0xD2E9FF);
+
+	scene = new THREE.Scene();
+	var grid = new THREE.GridHelper(200, 20, 'red', 'white');
+	scene.add(grid);
+	var axes = new THREE.AxesHelper(5);
+	scene.add(axes);
+
+	camera = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
+	camera.position.set(200, 200, 250);
+	camera.lookAt(new THREE.Vector3(0, 0, 0));
+	
+	/*camera3rd = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
+	camera3rd.position.set();
+	camera3rd.lookAt(new THREE.Vector3(0, 0, 0));*/
+
+	let controls = new THREE.OrbitControls(camera, renderer.domElement);
+	
+	controls.enableKeys = false;
+
+	window.addEventListener('resize', onWindowResize, false);
+	////////////////////////////////////////////////////////////////
+	var ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshBasicMaterial({
+	color: 0x00ad5f,
+	side: THREE.DoubleSide
+	}));
+	ground.rotation.x = Math.PI / 2;
+	scene.add(ground);
+
+	const light = new THREE.PointLight("white");
+	light.position.set(50, 50, 50);
+	scene.add(light);
+
+	car = new THREE.Object3D();
+
+	var windscreen = new THREE.Mesh(new THREE.PlaneGeometry(5, 4), new THREE.MeshPhongMaterial({
+		color: 0x82fcff,
+		side: THREE.DoubleSide
+	}));
+	windscreen.position.set(6.1, 7.5, 0);
+	windscreen.rotation.y = Math.PI / 2;
+
+	var licensePlate = new THREE.Mesh(new THREE.PlaneGeometry(5, 2), new THREE.MeshPhongMaterial({
+		color: "white",
+		side: THREE.DoubleSide
+	}));
+	licensePlate.position.set(-7.6, 2, 0);
+	licensePlate.rotation.y = Math.PI / 2;
+
+	var carBody = new THREE.Mesh(new THREE.BoxGeometry(15, 5, 10), new THREE.MeshPhongMaterial({
+		color: 0x0058a1,
+		shininess: 100
+	}));
+	carBody.position.set(0, 2.5, 0);
+
+	var carHead = new THREE.Mesh(new THREE.BoxGeometry(12, 5, 7), new THREE.MeshPhongMaterial({
+		color: 0x006bfa,
+		shininess: 100
+	}));
+	carHead.position.set(0, 7.5, 0);
+
+	var smokesTack = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 2, 32), new THREE.MeshPhongMaterial({
+		color: 0x97CBFF
+	}));
+	smokesTack.position.set(3, 11, 0);
+
+	var lightLeft = new THREE.Mesh(new THREE.CircleGeometry(1, 30), new THREE.MeshBasicMaterial({
+		color: 0xffed80,
+		side: THREE.DoubleSide
+	}));
+	lightLeft.position.set(7.6, 3.5, -2.5);
+	lightLeft.rotation.y = Math.PI / 2;
+	var lightRight = lightLeft.clone();
+	lightRight.position.set(7.6, 3.5, 2.5);
+	lightRight.rotation.y = Math.PI / 2;
+
+	car.add(windscreen, licensePlate, carBody, carHead, smokesTack, lightLeft, lightRight);
+	scene.add(car);
+	////////////////////////////////////
+	power = 0.1;
+	angle = 0.0;
+}
+
+function onWindowResize() {
+
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	camera.aspect = width / height;
+	camera.updateProjectionMatrix();
+	renderer.setSize(width, height);
+}
+
+function update(dt) {
+
+	keyboard.update();
+	
+	if (vel.length() > 0) {
+		angle = 1.5*Math.PI + Math.atan2(vel.x, vel.z);
+	}
+
+	if (keyboard.pressed("space"))  
+	  power = 0.1;               
+	if (keyboard.pressed("up"))  
+	  power *= 1.2;        
+	if (keyboard.pressed("down"))  
+	  power /= 1.2;   
+	  
+	//無法適用//power = Math.clamp(power, 0.0, 80.0); 
+	if (power <= 0)
+		power = 0.0;
+	if (power >= 80)	
+		power = 80.0;
+
+	var angle_thrust = angle;
+	if (keyboard.pressed("left"))
+	angle_thrust += 0.3;
+	if (keyboard.pressed("right"))
+	angle_thrust -= 0.3;
+
+	// compute force
+	var thrust = new THREE.Vector3(1,0,0).multiplyScalar(power).applyAxisAngle (new THREE.Vector3(0,1,0), angle_thrust);
+	force.copy (thrust);
+	force.add(vel.clone().multiplyScalar(-2))
+
+	// eulers
+	vel.add(force.clone().multiplyScalar(dt));
+	pos.add(vel.clone().multiplyScalar(dt));
+}
+
+function animate() {
+
+	var dt = clock.getDelta();
+	update(dt);
+	car.position.copy(pos);
+	car.rotation.y = angle;
+	
+	requestAnimationFrame(animate);
+	render();
+
+}
+
+function render() {
+
+  renderer.render(scene, camera);
+
+}
+
+</script>
+
+</body>
+</html>
