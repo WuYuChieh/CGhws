@@ -11,6 +11,18 @@
 	color: #004B97;
 }
 
+#infoOfScene {
+	position: absolute;
+	bottom: 8px;
+	padding-top: 10px; 
+	padding-right: 10px; 
+	padding-bottom: 10px; 
+	padding-left: 10px; 
+	font-size: 18px;
+	color: white; 
+	background-color: #004B97;
+}
+
 body {
 	overflow: hidden;
 }
@@ -20,6 +32,10 @@ body {
 <div id="info">
 	<h1>Homework 2 - Dynamic Drive, Rectangle-Circle Intersection, Dual Viewports</h1>
 </div>
+<div>
+	<h6 id="infoOfScene" style="left: 50px;">Bird's Eye View</h6>
+	<h6 id="infoOfScene" style="right: 50px;">Third Person View</h6>
+</div>
 
 <script src="https://threejs.org/build/three.min.js"></script>
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
@@ -28,9 +44,12 @@ body {
 
 <script>
 var camera, scene, renderer;
+var camera3rd;
 var keyboard = new KeyboardState();
 var car;
 var clock;
+var obstacles;
+var hit = -1;
 
 var pos = new THREE.Vector3(),
 	vel = new THREE.Vector3(),
@@ -62,13 +81,15 @@ function init() {
 	camera.position.set(200, 200, 250);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
-	/*camera3rd = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
-	camera3rd.position.set();
-	camera3rd.lookAt(new THREE.Vector3(0, 0, 0));*/
+	camera3rd = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
+	camera3rd.position.set(-107.5, 30, 0);//(car.localToWorld(new THREE.Vector3(-50, 20, 0)));
+	camera3rd.lookAt(0, 0, 0);//(car.localToWorld(new THREE.Vector3(0, 0, 0)));
+	
 
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
 	
 	controls.enableKeys = false;
+	renderer.autoClear = false;
 
 	window.addEventListener('resize', onWindowResize, false);
 	////////////////////////////////////////////////////////////////
@@ -116,7 +137,7 @@ function init() {
 	}));
 	smokesTack.position.set(3, 11, 0);
 
-	var lightLeft = new THREE.Mesh(new THREE.CircleGeometry(1, 30), new THREE.MeshBasicMaterial({
+	var lightLeft = new THREE.Mesh(new THREE.CircleGeometry(1, 30), new THREE.MeshPhongMaterial({
 		color: 0xffed80,
 		side: THREE.DoubleSide
 	}));
@@ -127,8 +148,26 @@ function init() {
 	lightRight.rotation.y = Math.PI / 2;
 
 	car.add(windscreen, licensePlate, carBody, carHead, smokesTack, lightLeft, lightRight);
-	scene.add(car);
-	////////////////////////////////////
+	
+	obstacles = new THREE.Object3D();
+	var obstacle0 = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 3, 32), new THREE.MeshPhongMaterial({
+		color: 0x009100
+	}));
+	obstacle0.position.set(-60, 1.5, -80);
+	var obstacle1 = obstacle0.clone();
+	obstacle1.position.set(55, 1.5, -20);
+	var obstacle2 = obstacle0.clone();
+	obstacle2.position.set(70, 1.5, 30);
+	var obstacle3 = obstacle0.clone();
+	obstacle3.position.set(-50, 1.5, 40);
+	var obstacle4 = obstacle0.clone();
+	obstacle4.position.set(90, 1.5, -50);
+	
+	obstacles.add(obstacle0/*, obstacle1, obstacle2, obstacle3, obstacle4*/);
+	
+	scene.add(car, obstacles);
+	///////////////////////////////////////////////////////////
+	
 	power = 0.1;
 	angle = 0.0;
 }
@@ -158,9 +197,9 @@ function update(dt) {
 	  power /= 1.2;   
 	  
 	//無法適用//power = Math.clamp(power, 0.0, 80.0); 
-	if (power <= 0)
+	if (power <= 0.0)
 		power = 0.0;
-	if (power >= 80)	
+	if (power >= 80.0)	
 		power = 80.0;
 
 	var angle_thrust = angle;
@@ -168,7 +207,7 @@ function update(dt) {
 	angle_thrust += 0.3;
 	if (keyboard.pressed("right"))
 	angle_thrust -= 0.3;
-
+	
 	// compute force
 	var thrust = new THREE.Vector3(1,0,0).multiplyScalar(power).applyAxisAngle (new THREE.Vector3(0,1,0), angle_thrust);
 	force.copy (thrust);
@@ -183,6 +222,7 @@ function animate() {
 
 	var dt = clock.getDelta();
 	update(dt);
+	
 	car.position.copy(pos);
 	car.rotation.y = angle;
 	
@@ -193,7 +233,20 @@ function animate() {
 
 function render() {
 
-  renderer.render(scene, camera);
+	var WW = window.innerWidth;
+	var HH = window.innerHeight;
+
+	renderer.clear();
+
+	renderer.setViewport(0, 0, WW / 2, HH);
+	camera.aspect = WW / 2 / HH;
+	camera.updateProjectionMatrix();
+	renderer.render(scene, camera);
+	//renderer.render(scene3rd, camera3rd);
+
+	renderer.setViewport(WW / 2, 0, WW / 2, HH);
+	//renderer.render(scene, camera);
+	renderer.render(scene, camera3rd);
 
 }
 
