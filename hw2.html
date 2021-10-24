@@ -73,17 +73,17 @@ function init() {
 
 	scene = new THREE.Scene();
 	var grid = new THREE.GridHelper(200, 20, 'red', 'white');
-	scene.add(grid);
+	//scene.add(grid);
 	var axes = new THREE.AxesHelper(5);
-	scene.add(axes);
+	//scene.add(axes);
 
 	camera = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
 	camera.position.set(200, 200, 250);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
 	camera3rd = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
-	camera3rd.position.set(-107.5, 30, 0);//(car.localToWorld(new THREE.Vector3(-50, 20, 0)));
-	camera3rd.lookAt(0, 0, 0);//(car.localToWorld(new THREE.Vector3(0, 0, 0)));
+	camera3rd.position.copy(new THREE.Vector3(-107.5, 30, 0));//(car.localToWorld(new THREE.Vector3(-50, 20, 0)));
+	camera3rd.lookAt(new THREE.Vector3(0, 0, 0));//(car.localToWorld(new THREE.Vector3(0, 0, 0)));
 	
 
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -153,7 +153,7 @@ function init() {
 	var obstacle0 = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 3, 32), new THREE.MeshPhongMaterial({
 		color: 0x009100
 	}));
-	obstacle0.position.set(-60, 1.5, -80);
+	obstacle0.position.set(90, 1.5, -50);
 	var obstacle1 = obstacle0.clone();
 	obstacle1.position.set(55, 1.5, -20);
 	var obstacle2 = obstacle0.clone();
@@ -161,14 +161,14 @@ function init() {
 	var obstacle3 = obstacle0.clone();
 	obstacle3.position.set(-50, 1.5, 40);
 	var obstacle4 = obstacle0.clone();
-	obstacle4.position.set(90, 1.5, -50);
+	obstacle4.position.set(-60, 1.5, -80);
 	
 	obstacles.add(obstacle0/*, obstacle1, obstacle2, obstacle3, obstacle4*/);
 	
 	scene.add(car, obstacles);
 	///////////////////////////////////////////////////////////
 	
-	power = 0.1;
+	power = 0.01;
 	angle = 0.0;
 }
 
@@ -190,17 +190,17 @@ function update(dt) {
 	}
 
 	if (keyboard.pressed("space"))  
-	  power = 0.1;               
+	  power = 0.01;               
 	if (keyboard.pressed("up"))  
-	  power *= 1.2;        
+	  power += 1.5;        
 	if (keyboard.pressed("down"))  
-	  power /= 1.2;   
+	  power -= 1.5;   
 	  
 	//無法適用//power = Math.clamp(power, 0.0, 80.0); 
 	if (power <= 0.0)
-		power = 0.0;
-	if (power >= 80.0)	
-		power = 80.0;
+		power = 0.01;
+	if (power >= 60.0)	
+		power = 60.0;
 
 	var angle_thrust = angle;
 	if (keyboard.pressed("left"))
@@ -211,7 +211,7 @@ function update(dt) {
 	// compute force
 	var thrust = new THREE.Vector3(1,0,0).multiplyScalar(power).applyAxisAngle (new THREE.Vector3(0,1,0), angle_thrust);
 	force.copy (thrust);
-	force.add(vel.clone().multiplyScalar(-2))
+	force.add(vel.clone().multiplyScalar(-2));
 
 	// eulers
 	vel.add(force.clone().multiplyScalar(dt));
@@ -238,13 +238,13 @@ function render() {
 
 	renderer.clear();
 
-	renderer.setViewport(0, 0, WW / 2, HH);
+	renderer.setViewport(10, 20, WW / 2 - 20, HH-100);
 	camera.aspect = WW / 2 / HH;
 	camera.updateProjectionMatrix();
 	renderer.render(scene, camera);
 	//renderer.render(scene3rd, camera3rd);
 
-	renderer.setViewport(WW / 2, 0, WW / 2, HH);
+	renderer.setViewport(WW / 2 + 10, 20, WW / 2 - 30, HH-100);
 	//renderer.render(scene, camera);
 	renderer.render(scene, camera3rd);
 
