@@ -46,8 +46,8 @@ body {
 <script src="https://raw.githack.com/jyunming-chen/tutsplus/master/js/KeyboardState.js"></script>
 
 <script>
-var camera, scene, scene1, renderer;
-var camera3rd;
+var camera, scene, renderer, camera3rd;
+var camera1, scene1;
 var keyboard = new KeyboardState();
 var car;
 var clock;
@@ -62,16 +62,24 @@ var power, angle;
 init();
 animate();
 
-/*function init1() {
+function init1() {
 	scene1 = new THREE.Scene();
+	camera1 = new THREE.OrthographicCamera(-10.01, 10.01, 10.01, -10.01, -10, 10);
+	camera1.position.z = 5;
 	
-	var sideLines = [];
-	sideLines.push = {new THREE.Vector3(-10, -10, 0),
+	let sideLines = [];
+	sideLines.push(new THREE.Vector3(-10, -10, 0),
     new THREE.Vector3(10, -10, 0),
     new THREE.Vector3(10, 10, 0),
     new THREE.Vector3(-10, 10, 0),
-    new THREE.Vector3(-10, -10, 0));}
-}*/
+    new THREE.Vector3(-10, -10, 0));
+	
+	var lineGeometry = new THREE.BufferGeometry().setFromPoints(sideLines);
+	var line = new THREE.Line(lineGeometry, new THREE.LineDashedMaterial({
+		color: 0x004B97
+	}));
+	scene1.add(line);
+}
 
 function init() {
 
@@ -93,12 +101,14 @@ function init() {
 	//scene.add(axes);
 
 	camera = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
-	camera.position.set(200, 200, 250);
+	camera.position.set(200, 150, 220);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
 	camera3rd = new THREE.PerspectiveCamera(40, width / height, 1, 10000);	
 
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
+	
+	init1();	
 	
 	controls.enableKeys = false;
 	renderer.autoClear = false;
@@ -226,13 +236,13 @@ function render() {
 
 	renderer.setViewport(10, 20, WW / 2 - 20, HH-100);
 	camera.aspect = WW / 2 / HH;
-	camera.updateProjectionMatrix();
+	camera1.updateProjectionMatrix();
 	renderer.render(scene, camera);
-	//renderer.render(scene, camera3rd);
-
-	renderer.setViewport(WW / 2 + 10, 20, WW / 2 - 30, HH-100);
-	//renderer.render(scene, camera);
+	renderer.render(scene1, camera1);
+	
+	renderer.setViewport(WW / 2 + 10, 20, WW / 2 - 30, HH-100);	
 	renderer.render(scene, camera3rd);
+	renderer.render(scene1, camera1);
 }
 
 function update(dt) {
@@ -334,7 +344,6 @@ function Check_Intersect(Bound, Cyli, Rad) {
 		}		
 	}	
 }
-
 </script>
 
 </body>
