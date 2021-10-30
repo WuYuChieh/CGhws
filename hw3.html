@@ -21,6 +21,7 @@
 	font-size: 18px;
 	color: white; 
 	background-color: #87cefa;
+	border-radius: 50px;
 }
 
 body {
@@ -34,9 +35,9 @@ body {
 </div>
 <div>
 	<h6 id="infoOfView" style="left: 50px;">3D View</h6>
-	<h6 id="infoOfView" style="right: 50px;">Front View</h6>
+	<h6 id="infoOfView" style="right: 500px;">Front View</h6>
 	<h6 id="infoOfView" style="left: 500px;">Top View</h6>
-	<h6 id="infoOfView" style="right: 500px;">Side View</h6>
+	<h6 id="infoOfView" style="right: 50px;">Side View</h6>
 </div>
 
 <script src="https://threejs.org/build/three.min.js"></script>
@@ -46,12 +47,15 @@ body {
 <script>
 var camera, scene, renderer;
 var cameraFront, cameraTop, cameraSide;
-var keyboard = new KeyboardState();
+
+var modules;
 
 init();
 animate();
 
 function init() {
+
+	modules = new THREE.Group();
 
 	renderer = new THREE.WebGLRenderer();
 	document.body.appendChild(renderer.domElement);
@@ -71,16 +75,17 @@ function init() {
 	camera.position.set(200, 150, 220);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
-	cameraFront = new THREE.OrthographicCamera(-100, 100, 100, -100, 1, 1000);
-	cameraFront.position.set(200, 150, 220);
+	cameraFront = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
+	cameraFront.position.z = 50;
 	cameraFront.lookAt(new THREE.Vector3(0, 0, 0));
 	
-	cameraTop = new THREE.OrthographicCamera(-100, 100, 100, -100, 1, 1000);
-	cameraTop.position.set(200, 150, 220);
+	cameraTop = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
+	cameraTop.position.set.y = 50;
+	cameraTop.up.set(new THREE.Vector3(0, 0, 1));
 	cameraTop.lookAt(new THREE.Vector3(0, 0, 0));
 	
-	cameraSide = new THREE.OrthographicCamera(-100, 100, 100, -100, 1, 1000);
-	cameraSide.position.set(200, 150, 220);
+	cameraSide = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
+	cameraSide.position.x = 50;
 	cameraSide.lookAt(new THREE.Vector3(0, 0, 0));
 	
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -90,6 +95,35 @@ function init() {
 
 	window.addEventListener('resize', onWindowResize, false);
 	////////////////////////////////////////////////////////////////
+	const light = new THREE.PointLight("white");
+	light.position.set(50, 50, 50);
+	scene.add(light);
+	
+	var box0 = new THREE.Mesh(new THREE.BoxGeometry(60, 25, 60), new THREE.MeshPhongMaterial({
+		color: 0xc0c0c0,
+		shininess: 100
+	}));
+	var box1 = new THREE.Mesh(new THREE.BoxGeometry(13, 50, 15), new THREE.MeshPhongMaterial({
+		color: 0xc0c0c0,
+		shininess: 100
+	}));
+	box1.position.set(-23.5, 13.5, 22.5);
+	var box2 = box1.clone();
+	box2.position.set(-23.5, 13.5, -22.5);
+	var box3 = box1.clone();
+	box3.position.set(23.5, 13.5, -22.5);
+	var box4 = box1.clone();
+	box4.position.set(23.5, 13.5, 22.5);
+	var box5 = new THREE.Mesh(new THREE.BoxGeometry(13, 30, 60), new THREE.MeshPhongMaterial({
+		color: 0xc0c0c0,
+		shininess: 100
+	}));
+	box5.position.set(-23.5, 2.5, 0);
+	var box6 = box5.clone();
+	box6.position.set(23.5, 2.5, 0);
+	modules.add(box0, box1, box2, box3, box4, box5, box6);
+	
+	scene.add(modules);
 }
 
 function onWindowResize() {
@@ -114,18 +148,18 @@ function render() {
 
 	renderer.clear();
 
-	renderer.setViewport(0, 0, WW / 3 * 2, HH);
+	renderer.setViewport(0, 0, WW / 4 * 3, HH - 100);
 	camera.aspect = WW / 2 / HH;
 	camera.updateProjectionMatrix();
 	renderer.render(scene, camera);
 	
-	renderer.setViewport(WW / 3 * 2, 0, WW / 3, HH / 3);
+	renderer.setViewport(WW / 4 * 3, 0, WW / 4, HH / 3 - 33);
 	renderer.render(scene, cameraSide);
 	
-	renderer.setViewport(WW / 3 * 2, HH / 3, WW / 3, HH / 3);
+	renderer.setViewport(WW / 4 * 3, HH / 3 - 33, WW / 4, HH / 3 - 33);
 	renderer.render(scene, cameraTop);
 	
-	renderer.setViewport(WW / 3 * 2, HH / 3 * 2, WW / 3, HH / 3);
+	renderer.setViewport(WW / 4 * 3, HH / 3 * 2 - 66, WW / 4, HH / 3 - 33);
 	renderer.render(scene, cameraFront);
 }
 </script>

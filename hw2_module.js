@@ -28,7 +28,7 @@ function update(dt) {
 	// compute force (Go forward)
 	if (power >= 0.00) {
 		var thrust = new THREE.Vector3(1,0,0).multiplyScalar(power).applyAxisAngle(new THREE.Vector3(0,1,0), angle_thrust);
-		force.copy (thrust);
+		force.copy(thrust);
 		force.add(vel.clone().multiplyScalar(-2));
 
 	// eulers
@@ -39,7 +39,7 @@ function update(dt) {
 	// compute force (Go back)
 	if (power <= -0.00) {
 		var thrust = new THREE.Vector3(1,0,0).multiplyScalar(-power).applyAxisAngle(new THREE.Vector3(0,1,0), angle_thrust);
-		force.copy (thrust);
+		force.copy(thrust);
 		force.add(vel.clone().multiplyScalar(-2));
 
 	// eulers
