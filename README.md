@@ -3,3 +3,4 @@
 - [hw0](https://github.com/WuYuChieh/CGhws/blob/master/hw0.html) - BoxGeometry to CylinderGeometry
 - [hw1](https://github.com/WuYuChieh/CGhws/blob/master/hw1.html) - Clock Timer
 - [hw2](https://github.com/WuYuChieh/CGhws/blob/master/hw2.html) - Dynamic Drive, Rectangle-Circle Intersection, Dual Viewports
+- [hw3](https://github.com/WuYuChieh/CGhws/blob/master/hw3.html) - Modeling, Multiple Viewports

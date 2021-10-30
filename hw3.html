@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#info {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	padding: 10px;
+	text-align: center;
+	color: #87cefa;
+}
+
+#infoOfView {
+	position: absolute;
+	bottom: 8px;
+	padding-top: 10px; 
+	padding-right: 10px; 
+	padding-bottom: 10px; 
+	padding-left: 10px; 
+	font-size: 18px;
+	color: white; 
+	background-color: #87cefa;
+}
+
+body {
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+<div id="info">
+	<h1>Homework 3 - Modeling, Multiple Viewports</h1>
+</div>
+<div>
+	<h6 id="infoOfView" style="left: 50px;">3D View</h6>
+	<h6 id="infoOfView" style="right: 50px;">Front View</h6>
+	<h6 id="infoOfView" style="left: 500px;">Top View</h6>
+	<h6 id="infoOfView" style="right: 500px;">Side View</h6>
+</div>
+
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script>
+var camera, scene, renderer;
+var cameraFront, cameraTop, cameraSide;
+var keyboard = new KeyboardState();
+
+init();
+animate();
+
+function init() {
+
+	renderer = new THREE.WebGLRenderer();
+	document.body.appendChild(renderer.domElement);
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	renderer.setSize(width, height);
+
+	renderer.setClearColor(0x4169e1);
+
+	scene = new THREE.Scene();
+	var grid = new THREE.GridHelper(200, 20, 'red', 'white');
+	scene.add(grid);
+	var axes = new THREE.AxesHelper(5);
+	scene.add(axes);
+
+	camera = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
+	camera.position.set(200, 150, 220);
+	camera.lookAt(new THREE.Vector3(0, 0, 0));
+	
+	cameraFront = new THREE.OrthographicCamera(-100, 100, 100, -100, 1, 1000);
+	cameraFront.position.set(200, 150, 220);
+	cameraFront.lookAt(new THREE.Vector3(0, 0, 0));
+	
+	cameraTop = new THREE.OrthographicCamera(-100, 100, 100, -100, 1, 1000);
+	cameraTop.position.set(200, 150, 220);
+	cameraTop.lookAt(new THREE.Vector3(0, 0, 0));
+	
+	cameraSide = new THREE.OrthographicCamera(-100, 100, 100, -100, 1, 1000);
+	cameraSide.position.set(200, 150, 220);
+	cameraSide.lookAt(new THREE.Vector3(0, 0, 0));
+	
+	let controls = new THREE.OrbitControls(camera, renderer.domElement);
+	
+	controls.enableKeys = false;
+	renderer.autoClear = false;
+
+	window.addEventListener('resize', onWindowResize, false);
+	////////////////////////////////////////////////////////////////
+}
+
+function onWindowResize() {
+
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	camera.aspect = width / height;
+	camera.updateProjectionMatrix();
+	renderer.setSize(width, height);
+}
+
+function animate() {
+	
+	requestAnimationFrame(animate);
+	render();
+}
+
+function render() {
+
+	var WW = window.innerWidth;
+	var HH = window.innerHeight;
+
+	renderer.clear();
+
+	renderer.setViewport(0, 0, WW / 3 * 2, HH);
+	camera.aspect = WW / 2 / HH;
+	camera.updateProjectionMatrix();
+	renderer.render(scene, camera);
+	
+	renderer.setViewport(WW / 3 * 2, 0, WW / 3, HH / 3);
+	renderer.render(scene, cameraSide);
+	
+	renderer.setViewport(WW / 3 * 2, HH / 3, WW / 3, HH / 3);
+	renderer.render(scene, cameraTop);
+	
+	renderer.setViewport(WW / 3 * 2, HH / 3 * 2, WW / 3, HH / 3);
+	renderer.render(scene, cameraFront);
+}
+</script>
+
+</body>
+</html>
