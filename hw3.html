@@ -14,16 +14,10 @@
 #infoOfView {
 	position: absolute;
 	bottom: 8px;
-	padding-top: 10px; 
-	padding-right: 10px; 
-	padding-bottom: 10px; 
-	padding-left: 10px; 
-	font-size: 18px;
+	padding: 10px 15px 10px;
 	color: white; 
-	background-color: #87cefa;
-	border-radius: 50px;
 }
-
+font-size: 18px;
 body {
 	overflow: hidden;
 }
@@ -34,10 +28,10 @@ body {
 	<h1>Homework 3 - Modeling, Multiple Viewports</h1>
 </div>
 <div>
-	<h6 id="infoOfView" style="left: 50px;">3D View</h6>
-	<h6 id="infoOfView" style="right: 500px;">Front View</h6>
-	<h6 id="infoOfView" style="left: 500px;">Top View</h6>
-	<h6 id="infoOfView" style="right: 50px;">Side View</h6>
+	<h1 id="infoOfView" style="left: 50px; background-color: #87cefa; border-radius: 50px;">3D View</h1>
+	<h1 id="infoOfView" style="right: 6%; top: 20%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Front View</h1>
+	<h1 id="infoOfView" style="right: 6%; top: 53%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Top View</h1>
+	<h1 id="infoOfView" style="right: 6%; top: 80%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Side View</h1>
 </div>
 
 <script src="https://threejs.org/build/three.min.js"></script>
@@ -76,17 +70,17 @@ function init() {
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
 	cameraFront = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
-	cameraFront.position.z = 50;
-	cameraFront.lookAt(new THREE.Vector3(0, 0, 0));
+	cameraFront.position.set(0, 0, 50);
+	cameraFront.lookAt(0, 0, 0);
 	
 	cameraTop = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
-	cameraTop.position.set.y = 50;
-	cameraTop.up.set(new THREE.Vector3(0, 0, 1));
-	cameraTop.lookAt(new THREE.Vector3(0, 0, 0));
+	cameraTop.position.set(0, 50, 0);
+	cameraTop.up.set(0, 0, -1);
+	cameraTop.lookAt(0, 0, 0);
 	
 	cameraSide = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
-	cameraSide.position.x = 50;
-	cameraSide.lookAt(new THREE.Vector3(0, 0, 0));
+	cameraSide.position.set(50, 0, 0);
+	cameraSide.lookAt(0, 0, 0);
 	
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
 	
