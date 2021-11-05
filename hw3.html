@@ -69,16 +69,16 @@ function init() {
 	camera.position.set(200, 150, 220);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
-	cameraFront = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
+	cameraFront = new THREE.OrthographicCamera(-80, 80, 80, -80, 1, 1000);
 	cameraFront.position.set(0, 0, 50);
 	cameraFront.lookAt(0, 0, 0);
 	
-	cameraTop = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
+	cameraTop = new THREE.OrthographicCamera(-80, 80, 80, -80, 1, 1000);
 	cameraTop.position.set(0, 50, 0);
 	cameraTop.up.set(0, 0, -1);
 	cameraTop.lookAt(0, 0, 0);
 	
-	cameraSide = new THREE.OrthographicCamera(-70, 70, 70, -70, 1, 1000);
+	cameraSide = new THREE.OrthographicCamera(-80, 80, 80, -80, 1, 1000);
 	cameraSide.position.set(50, 0, 0);
 	cameraSide.lookAt(0, 0, 0);
 	
@@ -89,8 +89,8 @@ function init() {
 
 	window.addEventListener('resize', onWindowResize, false);
 	////////////////////////////////////////////////////////////////
-	const light = new THREE.PointLight("white");
-	light.position.set(50, 50, 50);
+	const light = new THREE.PointLight("white", 1.4);
+	light.position.set(70, 70, 70);
 	scene.add(light);
 	
 	var box0 = new THREE.Mesh(new THREE.BoxGeometry(60, 25, 60), new THREE.MeshPhongMaterial({
@@ -115,8 +115,61 @@ function init() {
 	box5.position.set(-23.5, 2.5, 0);
 	var box6 = box5.clone();
 	box6.position.set(23.5, 2.5, 0);
-	modules.add(box0, box1, box2, box3, box4, box5, box6);
 	
+	var shape0 = new THREE.Shape();
+	shape0.moveTo(0, 0);
+	shape0.lineTo(0, 25);
+	shape0.absarc(5, 25, 5, Math.PI, Math.PI*1.5);
+	shape0.lineTo(5, 0);
+	shape0.lineTo(0, 0);
+	
+	var shape0Settings = {
+    steps: 1,
+    depth: 60,
+    bevelEnabled: false,
+	};
+	
+	var geometry0 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape0, shape0Settings), new THREE.MeshPhongMaterial({
+		color: 0xc0c0c0,
+		shininess: 100,
+		side: THREE.DoubleSide
+	}));
+	geometry0.position.set(30, -12.5, -30);
+	
+	var shape1 = new THREE.Shape();
+	shape1.moveTo(0, 0);
+	shape1.lineTo(35, 0);
+	shape1.absarc(35, 30, 30, Math.PI*1.5, Math.PI*0.5);
+	shape1.lineTo(0, 60);
+	shape1.lineTo(0, 0);	
+	
+	var path = new THREE.Path();
+	path.moveTo(35, 30);
+	path.absarc(35, 30, 10, 0, Math.PI*2);
+	shape1.holes.push(path);
+	
+	var shape1Settings = {
+    steps: 1,
+    depth: 20,
+    bevelEnabled: false,
+	};
+	
+	var geometry1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape1, shape1Settings), new THREE.MeshPhongMaterial({
+		color: 0xc0c0c0,
+		shininess: 100,
+		side: THREE.DoubleSide
+	}));
+	geometry1.rotation.x = -Math.PI / 2;
+	geometry1.position.set(35, -12.5, 30);	
+	
+	var holeSettings = {
+    steps: 1,
+    depth: 20,
+    bevelEnabled: false,
+	};
+	
+	modules.add(box0, box1, box2, box3, box4, box5, box6, geometry0, geometry1);
+	modules.position.set(-35, 12.5, 0);
 	scene.add(modules);
 }
 
