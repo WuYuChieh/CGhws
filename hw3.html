@@ -11,13 +11,20 @@
 	color: #87cefa;
 }
 
-#infoOfView {
+.infoOfView {
 	position: absolute;
 	bottom: 8px;
 	padding: 10px 15px 10px;
 	color: white; 
 }
-font-size: 18px;
+
+.Button {
+	top: 1px;
+	height: 30px;
+	width: 100px;
+	background-color: #87cefa;
+}
+
 body {
 	overflow: hidden;
 }
@@ -26,12 +33,13 @@ body {
 <body>
 <div id="info">
 	<h1>Homework 3 - Modeling, Multiple Viewports</h1>
+	<button id=toggle class="Button" style="border-radius: 50%; color: #0000cd;">Front View</button>
 </div>
 <div>
-	<h1 id="infoOfView" style="left: 50px; background-color: #87cefa; border-radius: 50px;">3D View</h1>
-	<h1 id="infoOfView" style="right: 6%; top: 20%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Front View</h1>
-	<h1 id="infoOfView" style="right: 6%; top: 53%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Top View</h1>
-	<h1 id="infoOfView" style="right: 6%; top: 80%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Side View</h1>
+	<h1 id=Main class="infoOfView" style="left: 50px; background-color: #87cefa; border-radius: 50px;">3D View</h1>
+	<h1 id=Front class="infoOfView" style="right: 6%; top: 20%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Front View</h1>
+	<h1 id=Top  class="infoOfView" style="right: 6%; top: 53%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Top View</h1>
+	<h1 id=Side class="infoOfView" style="right: 6%; top: 80%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Side View</h1>
 </div>
 
 <script src="https://threejs.org/build/three.min.js"></script>
@@ -41,6 +49,45 @@ body {
 <script>
 var camera, scene, renderer;
 var cameraFront, cameraTop, cameraSide;
+var count = 0;
+var viewToggle = false;
+var cameras = [];
+
+$(`#toggle`).click(function() {
+	viewToggle = !viewToggle;
+	count++;
+	if (count > 3)
+		count = 0;
+	console.log(count);
+	if (viewToggle && count === 1) {
+		$("#toggle").text ('Top View');
+		$("#Main").text('Front View');
+		$("#Front").text('Top View');
+		$("#Top").text('Side View');
+		$("#Side").text('3D View');
+	}
+	else if (!viewToggle && count === 2) {
+		$("#toggle").text ('Side View');
+		$("#Main").text('Top View');
+		$("#Front").text('Side View');
+		$("#Top").text('3D View');
+		$("#Side").text('Front View');
+	}
+	else if (viewToggle && count === 3) {
+		$("#toggle").text ('3D View');
+		$("#Main").text('Side View');
+		$("#Front").text('Front View');
+		$("#Top").text('3D View');
+		$("#Side").text('Top View');
+	}
+	else {
+		$("#toggle").text ('Front View');
+		$("#Main").text('3D View');
+		$("#Front").text('Front View');
+		$("#Top").text('Top View');
+		$("#Side").text('Side View');
+	}
+})
 
 var modules;
 
@@ -81,6 +128,8 @@ function init() {
 	cameraSide = new THREE.OrthographicCamera(-80, 80, 80, -80, 1, 1000);
 	cameraSide.position.set(50, 0, 0);
 	cameraSide.lookAt(0, 0, 0);
+	
+	cameras.push(camera, cameraFront, cameraTop, cameraSide);
 	
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
 	
@@ -132,15 +181,14 @@ function init() {
 	var geometry0 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape0, shape0Settings), new THREE.MeshPhongMaterial({
 		color: 0xc0c0c0,
 		shininess: 100,
-		side: THREE.DoubleSide
 	}));
 	geometry0.position.set(30, -12.5, -30);
 	
 	var shape1 = new THREE.Shape();
 	shape1.moveTo(0, 0);
 	shape1.lineTo(35, 0);
-	shape1.absarc(35, 30, 30, Math.PI*1.5, Math.PI*0.5);
-	shape1.lineTo(0, 60);
+	shape1.absarc(35, 30, 30, Math.PI*1.5, Math.PI*0.5);	
+	shape1.lineTo(0, 60);	
 	shape1.lineTo(0, 0);	
 	
 	var path = new THREE.Path();
@@ -157,7 +205,6 @@ function init() {
 	var geometry1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape1, shape1Settings), new THREE.MeshPhongMaterial({
 		color: 0xc0c0c0,
 		shininess: 100,
-		side: THREE.DoubleSide
 	}));
 	geometry1.rotation.x = -Math.PI / 2;
 	geometry1.position.set(35, -12.5, 30);	
@@ -198,16 +245,16 @@ function render() {
 	renderer.setViewport(0, 0, WW / 4 * 3, HH - 100);
 	camera.aspect = WW / 2 / HH;
 	camera.updateProjectionMatrix();
-	renderer.render(scene, camera);
+	renderer.render(scene, cameras[count]);
 	
 	renderer.setViewport(WW / 4 * 3, 0, WW / 4, HH / 3 - 33);
-	renderer.render(scene, cameraSide);
+	renderer.render(scene, cameras[(count+3) % 4]);
 	
 	renderer.setViewport(WW / 4 * 3, HH / 3 - 33, WW / 4, HH / 3 - 33);
-	renderer.render(scene, cameraTop);
+	renderer.render(scene, cameras[(count+2) % 4]);
 	
 	renderer.setViewport(WW / 4 * 3, HH / 3 * 2 - 66, WW / 4, HH / 3 - 33);
-	renderer.render(scene, cameraFront);
+	renderer.render(scene, cameras[(count+1) % 4]);
 }
 </script>
 
