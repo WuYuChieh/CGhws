@@ -16,6 +16,8 @@
 	bottom: 8px;
 	padding: 10px 15px 10px;
 	color: white; 
+	text-shadow: 2px 2px 4px #000000;
+	font-size: 25px;
 }
 
 .Button {
@@ -24,7 +26,7 @@
 	width: 100px;
 	background-color: #87cefa;
 }
-
+background-color: #87cefa; border-radius: 50px;
 body {
 	overflow: hidden;
 }
@@ -32,14 +34,10 @@ body {
 </head>
 <body>
 <div id="info">
-	<h1>Homework 3 - Modeling, Multiple Viewports</h1>
-	<button id=toggle class="Button" style="border-radius: 50%; color: #0000cd;">Front View</button>
-</div>
-<div>
-	<h1 id=Main class="infoOfView" style="left: 50px; background-color: #87cefa; border-radius: 50px;">3D View</h1>
-	<h1 id=Front class="infoOfView" style="right: 6%; top: 20%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Front View</h1>
-	<h1 id=Top  class="infoOfView" style="right: 6%; top: 53%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Top View</h1>
-	<h1 id=Side class="infoOfView" style="right: 6%; top: 80%; text-shadow: 2px 2px 4px #000000; opacity: 0.6;">Side View</h1>
+	<h1>Homework 3 - Modeling, Multiple Viewports
+		<button id=toggleViewSize class="Button" style="border-radius: 50%; color: #0000cd;">Enlarge</button>
+		<button id=toggle class="Button" style="border-radius: 50%; color: #0000cd;">Front View</button>
+	</h1>
 </div>
 
 <script src="https://threejs.org/build/three.min.js"></script>
@@ -50,42 +48,35 @@ body {
 var camera, scene, renderer;
 var cameraFront, cameraTop, cameraSide;
 var count = 0;
-var viewToggle = false;
+var viewToggle = false, viewSize = false;
 var cameras = [];
+
+$(`#toggleViewSize`).click(function() {
+	viewSize = !viewSize;
+	if (viewSize) {
+		$("#toggleViewSize").text ('Narrow');
+	}
+	else {
+		$("#toggleViewSize").text ('Enlarge');
+	}
+})
 
 $(`#toggle`).click(function() {
 	viewToggle = !viewToggle;
 	count++;
 	if (count > 3)
 		count = 0;
-	console.log(count);
 	if (viewToggle && count === 1) {
 		$("#toggle").text ('Top View');
-		$("#Main").text('Front View');
-		$("#Front").text('Top View');
-		$("#Top").text('Side View');
-		$("#Side").text('3D View');
 	}
 	else if (!viewToggle && count === 2) {
 		$("#toggle").text ('Side View');
-		$("#Main").text('Top View');
-		$("#Front").text('Side View');
-		$("#Top").text('3D View');
-		$("#Side").text('Front View');
 	}
 	else if (viewToggle && count === 3) {
 		$("#toggle").text ('3D View');
-		$("#Main").text('Side View');
-		$("#Front").text('Front View');
-		$("#Top").text('3D View');
-		$("#Side").text('Top View');
 	}
 	else {
 		$("#toggle").text ('Front View');
-		$("#Main").text('3D View');
-		$("#Front").text('Front View');
-		$("#Top").text('Top View');
-		$("#Side").text('Side View');
 	}
 })
 
@@ -116,16 +107,16 @@ function init() {
 	camera.position.set(200, 150, 220);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
-	cameraFront = new THREE.OrthographicCamera(-80, 80, 80, -80, 1, 1000);
+	cameraFront = new THREE.OrthographicCamera(-70, 70, 60, -60, 1, 100);
 	cameraFront.position.set(0, 0, 50);
 	cameraFront.lookAt(0, 0, 0);
 	
-	cameraTop = new THREE.OrthographicCamera(-80, 80, 80, -80, 1, 1000);
+	cameraTop = new THREE.OrthographicCamera(-70, 70, 60, -60, 1, 100);
 	cameraTop.position.set(0, 50, 0);
 	cameraTop.up.set(0, 0, -1);
 	cameraTop.lookAt(0, 0, 0);
 	
-	cameraSide = new THREE.OrthographicCamera(-80, 80, 80, -80, 1, 1000);
+	cameraSide = new THREE.OrthographicCamera(-70, 70, 60, -60, 1, 100);
 	cameraSide.position.set(50, 0, 0);
 	cameraSide.lookAt(0, 0, 0);
 	
@@ -175,7 +166,7 @@ function init() {
 	var shape0Settings = {
     steps: 1,
     depth: 60,
-    bevelEnabled: false,
+    bevelEnabled: false
 	};
 	
 	var geometry0 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape0, shape0Settings), new THREE.MeshPhongMaterial({
@@ -199,7 +190,7 @@ function init() {
 	var shape1Settings = {
     steps: 1,
     depth: 20,
-    bevelEnabled: false,
+    bevelEnabled: false
 	};
 	
 	var geometry1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape1, shape1Settings), new THREE.MeshPhongMaterial({
@@ -208,12 +199,6 @@ function init() {
 	}));
 	geometry1.rotation.x = -Math.PI / 2;
 	geometry1.position.set(35, -12.5, 30);	
-	
-	var holeSettings = {
-    steps: 1,
-    depth: 20,
-    bevelEnabled: false,
-	};
 	
 	modules.add(box0, box1, box2, box3, box4, box5, box6, geometry0, geometry1);
 	modules.position.set(-35, 12.5, 0);
@@ -241,20 +226,36 @@ function render() {
 	var HH = window.innerHeight;
 
 	renderer.clear();
-
-	renderer.setViewport(0, 0, WW / 4 * 3, HH - 100);
-	camera.aspect = WW / 2 / HH;
-	camera.updateProjectionMatrix();
-	renderer.render(scene, cameras[count]);
-	
-	renderer.setViewport(WW / 4 * 3, 0, WW / 4, HH / 3 - 33);
-	renderer.render(scene, cameras[(count+3) % 4]);
-	
-	renderer.setViewport(WW / 4 * 3, HH / 3 - 33, WW / 4, HH / 3 - 33);
-	renderer.render(scene, cameras[(count+2) % 4]);
-	
-	renderer.setViewport(WW / 4 * 3, HH / 3 * 2 - 66, WW / 4, HH / 3 - 33);
-	renderer.render(scene, cameras[(count+1) % 4]);
+	if (viewSize) {
+		renderer.setViewport(0, 0, WW / 6 * 5, HH - 100);
+		camera.aspect = WW / 2 / HH;
+		camera.updateProjectionMatrix();
+		renderer.render(scene, cameras[count]);
+		
+		renderer.setViewport(WW / 6 * 5, 0, WW / 6, HH / 3 - 33);
+		renderer.render(scene, cameras[(count+3) % 4]);
+		
+		renderer.setViewport(WW / 6 * 5, HH / 3 - 33, WW / 6, HH / 3 - 33);
+		renderer.render(scene, cameras[(count+2) % 4]);
+		
+		renderer.setViewport(WW / 6 * 5, HH / 3 * 2 - 66, WW / 6, HH / 3 - 33);
+		renderer.render(scene, cameras[(count+1) % 4]);
+	}
+	else {
+		renderer.setViewport(WW / 2, (HH-100) / 2, WW / 2, (HH-100) / 2);
+		camera.aspect = WW / 2 / HH;
+		camera.updateProjectionMatrix();
+		renderer.render(scene, cameras[count]);
+		
+		renderer.setViewport(WW / 2, 0, WW / 2, (HH-100) / 2);
+		renderer.render(scene, cameras[(count+3) % 4]);
+		
+		renderer.setViewport(0, (HH-100) / 2, WW / 2, (HH-100) / 2);
+		renderer.render(scene, cameras[(count+2) % 4]);
+		
+		renderer.setViewport(0, 0, WW / 2, (HH-100) / 2);
+		renderer.render(scene, cameras[(count+1) % 4]);
+	}
 }
 </script>
 
