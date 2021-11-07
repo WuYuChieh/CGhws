@@ -166,7 +166,8 @@ function init() {
 	var shape0Settings = {
     steps: 1,
     depth: 60,
-    bevelEnabled: false
+    bevelEnabled: false,
+	curveSegments: 200
 	};
 	
 	var geometry0 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape0, shape0Settings), new THREE.MeshPhongMaterial({
@@ -190,7 +191,8 @@ function init() {
 	var shape1Settings = {
     steps: 1,
     depth: 20,
-    bevelEnabled: false
+    bevelEnabled: false,
+		curveSegments: 200
 	};
 	
 	var geometry1 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape1, shape1Settings), new THREE.MeshPhongMaterial({
