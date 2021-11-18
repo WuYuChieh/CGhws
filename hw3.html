@@ -36,7 +36,6 @@ body {
 <div id="info">
 	<h1>Homework 3 - Modeling, Multiple Viewports
 		<button id=toggleViewSize class="Button" style="border-radius: 50%; color: #0000cd;">Enlarge</button>
-		<button id=toggle class="Button" style="border-radius: 50%; color: #0000cd;">Front View</button>
 	</h1>
 </div>
 
@@ -44,12 +43,12 @@ body {
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 
+
 <script>
-var camera, scene, renderer;
+var camera, scene0, renderer, scene1, sceneFull, cameraFull;
 var cameraFront, cameraTop, cameraSide;
-var count = 0;
 var viewToggle = false, viewSize = false;
-var cameras = [];
+var modules;
 
 $(`#toggleViewSize`).click(function() {
 	viewSize = !viewSize;
@@ -61,29 +60,27 @@ $(`#toggleViewSize`).click(function() {
 	}
 })
 
-$(`#toggle`).click(function() {
-	viewToggle = !viewToggle;
-	count++;
-	if (count > 3)
-		count = 0;
-	if (viewToggle && count === 1) {
-		$("#toggle").text ('Top View');
-	}
-	else if (!viewToggle && count === 2) {
-		$("#toggle").text ('Side View');
-	}
-	else if (viewToggle && count === 3) {
-		$("#toggle").text ('3D View');
-	}
-	else {
-		$("#toggle").text ('Front View');
-	}
-})
-
-var modules;
-
 init();
 animate();
+
+function init1() {
+	sceneFull = new THREE.Scene();
+	cameraFull = new THREE.OrthographicCamera(-10.01, 10.01, 10.01, -10.01, -10, 10);
+	cameraFull.position.z = 5;
+	
+	let sideLines = [];
+	sideLines.push(new THREE.Vector3(-10, -10, 0),
+    new THREE.Vector3(10, -10, 0),
+    new THREE.Vector3(10, 10, 0),
+    new THREE.Vector3(-10, 10, 0),
+    new THREE.Vector3(-10, -10, 0));
+	
+	var lineGeometry = new THREE.BufferGeometry().setFromPoints(sideLines);
+	var line = new THREE.Line(lineGeometry, new THREE.LineDashedMaterial({
+		color: 0x000080
+	}));
+	sceneFull.add(line);
+}
 
 function init() {
 
@@ -97,30 +94,28 @@ function init() {
 
 	renderer.setClearColor(0x4169e1);
 
-	scene = new THREE.Scene();
+	scene0 = new THREE.Scene();
 	var grid = new THREE.GridHelper(200, 20, 'red', 'white');
-	scene.add(grid);
+	//scene0.add(grid);
 	var axes = new THREE.AxesHelper(5);
-	scene.add(axes);
+	//scene0.add(axes);
 
 	camera = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
 	camera.position.set(200, 150, 220);
 	camera.lookAt(new THREE.Vector3(0, 0, 0));
 	
 	cameraFront = new THREE.OrthographicCamera(-70, 70, 60, -60, 1, 100);
-	cameraFront.position.set(0, 0, 50);
-	cameraFront.lookAt(0, 0, 0);
+	cameraFront.position.set(0, 20, 50);
+	cameraFront.lookAt(0, 20, 0);
 	
 	cameraTop = new THREE.OrthographicCamera(-70, 70, 60, -60, 1, 100);
 	cameraTop.position.set(0, 50, 0);
 	cameraTop.up.set(0, 0, -1);
 	cameraTop.lookAt(0, 0, 0);
 	
-	cameraSide = new THREE.OrthographicCamera(-70, 70, 60, -60, 1, 100);
-	cameraSide.position.set(50, 0, 0);
-	cameraSide.lookAt(0, 0, 0);
-	
-	cameras.push(camera, cameraFront, cameraTop, cameraSide);
+	cameraSide = new THREE.OrthographicCamera(-70, 70, 60, -60, -100, 100);
+	cameraSide.position.set(50, 20, 0);
+	cameraSide.lookAt(0, 20, 0);
 	
 	let controls = new THREE.OrbitControls(camera, renderer.domElement);
 	
@@ -131,7 +126,7 @@ function init() {
 	////////////////////////////////////////////////////////////////
 	const light = new THREE.PointLight("white", 1.4);
 	light.position.set(70, 70, 70);
-	scene.add(light);
+	scene0.add(light);
 	
 	var box0 = new THREE.Mesh(new THREE.BoxGeometry(60, 25, 60), new THREE.MeshPhongMaterial({
 		color: 0xc0c0c0,
@@ -164,10 +159,10 @@ function init() {
 	shape0.lineTo(0, 0);
 	
 	var shape0Settings = {
-    steps: 1,
-    depth: 60,
-    bevelEnabled: false,
-	curveSegments: 200
+		steps: 1,
+		depth: 60,
+		bevelEnabled: false,
+		curveSegments: 200
 	};
 	
 	var geometry0 = new THREE.Mesh(new THREE.ExtrudeGeometry(shape0, shape0Settings), new THREE.MeshPhongMaterial({
@@ -189,9 +184,9 @@ function init() {
 	shape1.holes.push(path);
 	
 	var shape1Settings = {
-    steps: 1,
-    depth: 20,
-    bevelEnabled: false,
+		steps: 1,
+		depth: 20,
+		bevelEnabled: false,
 		curveSegments: 200
 	};
 	
@@ -204,7 +199,11 @@ function init() {
 	
 	modules.add(box0, box1, box2, box3, box4, box5, box6, geometry0, geometry1);
 	modules.position.set(-35, 12.5, 0);
-	scene.add(modules);
+	
+	scene0.add(modules);
+	scene1 = scene0.clone();
+	scene1.add(grid);
+	init1();
 }
 
 function onWindowResize() {
@@ -229,34 +228,43 @@ function render() {
 
 	renderer.clear();
 	if (viewSize) {
-		renderer.setViewport(0, 0, WW / 6 * 5, HH - 100);
+		renderer.setViewport(5, 5, WW / 6 * 5 - 5, HH - 95);
 		camera.aspect = WW / 2 / HH;
 		camera.updateProjectionMatrix();
-		renderer.render(scene, cameras[count]);
-		
-		renderer.setViewport(WW / 6 * 5, 0, WW / 6, HH / 3 - 33);
-		renderer.render(scene, cameras[(count+3) % 4]);
-		
-		renderer.setViewport(WW / 6 * 5, HH / 3 - 33, WW / 6, HH / 3 - 33);
-		renderer.render(scene, cameras[(count+2) % 4]);
-		
-		renderer.setViewport(WW / 6 * 5, HH / 3 * 2 - 66, WW / 6, HH / 3 - 33);
-		renderer.render(scene, cameras[(count+1) % 4]);
+		renderer.render(scene1, camera);
+		renderer.render(sceneFull, cameraFull);
+
+		renderer.setViewport(WW / 6 * 5 + 5, 5, WW / 6 - 10, HH / 3 - 38);
+		renderer.render(scene0, cameraSide);
+		renderer.render(sceneFull, cameraFull);
+
+		renderer.setViewport(WW / 6 * 5 + 5, HH / 3 - 23, WW / 6 - 10, HH / 3 - 38);
+		renderer.render(scene0, cameraTop);
+		renderer.render(sceneFull, cameraFull);
+
+		renderer.setViewport(WW / 6 * 5 + 5, HH / 3 * 2 - 51, WW / 6 - 10, HH / 3 - 38);
+		renderer.render(scene0, cameraFront);
+		renderer.render(sceneFull, cameraFull);
+
 	}
 	else {
-		renderer.setViewport(WW / 2, (HH-100) / 2, WW / 2, (HH-100) / 2);
+		renderer.setViewport(WW / 2 + 5, (HH-100) / 2 + 5, WW / 2 - 5, (HH-100) / 2 - 5);
 		camera.aspect = WW / 2 / HH;
 		camera.updateProjectionMatrix();
-		renderer.render(scene, cameras[count]);
-		
-		renderer.setViewport(WW / 2, 0, WW / 2, (HH-100) / 2);
-		renderer.render(scene, cameras[(count+3) % 4]);
-		
-		renderer.setViewport(0, (HH-100) / 2, WW / 2, (HH-100) / 2);
-		renderer.render(scene, cameras[(count+2) % 4]);
-		
-		renderer.setViewport(0, 0, WW / 2, (HH-100) / 2);
-		renderer.render(scene, cameras[(count+1) % 4]);
+		renderer.render(scene1, camera);
+		renderer.render(sceneFull, cameraFull);
+
+		renderer.setViewport(WW / 2 + 5, 5, WW / 2 - 5, (HH-100) / 2 - 5);
+		renderer.render(scene0, cameraSide);
+		renderer.render(sceneFull, cameraFull);
+
+		renderer.setViewport(5, (HH-100) / 2 + 5, WW / 2 - 5, (HH-100) / 2 - 5);
+		renderer.render(scene0, cameraTop);
+		renderer.render(sceneFull, cameraFull);
+
+		renderer.setViewport(5, 5, WW / 2 - 5, (HH-100) / 2 - 5);
+		renderer.render(scene0, cameraFront);
+		renderer.render(sceneFull, cameraFull);
 	}
 }
 </script>
