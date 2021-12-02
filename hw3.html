@@ -26,7 +26,7 @@
 	width: 100px;
 	background-color: #87cefa;
 }
-background-color: #87cefa; border-radius: 50px;
+
 body {
 	overflow: hidden;
 }
@@ -228,24 +228,10 @@ function render() {
 
 	renderer.clear();
 	if (viewSize) {
-		renderer.setViewport(5, 5, WW / 6 * 5 - 5, HH - 95);
+		renderer.setViewport(5, 5, WW - 10, HH - 110);
 		camera.aspect = WW / 2 / HH;
 		camera.updateProjectionMatrix();
 		renderer.render(scene1, camera);
-		renderer.render(sceneFull, cameraFull);
-
-		renderer.setViewport(WW / 6 * 5 + 5, 5, WW / 6 - 10, HH / 3 - 38);
-		renderer.render(scene0, cameraSide);
-		renderer.render(sceneFull, cameraFull);
-
-		renderer.setViewport(WW / 6 * 5 + 5, HH / 3 - 23, WW / 6 - 10, HH / 3 - 38);
-		renderer.render(scene0, cameraTop);
-		renderer.render(sceneFull, cameraFull);
-
-		renderer.setViewport(WW / 6 * 5 + 5, HH / 3 * 2 - 51, WW / 6 - 10, HH / 3 - 38);
-		renderer.render(scene0, cameraFront);
-		renderer.render(sceneFull, cameraFull);
-
 	}
 	else {
 		renderer.setViewport(WW / 2 + 5, (HH-100) / 2 + 5, WW / 2 - 5, (HH-100) / 2 - 5);
