@@ -4,5 +4,5 @@
 - [hw1](https://github.com/WuYuChieh/CGhws/blob/master/hw1.html) - Clock Timer
 - [hw2](https://github.com/WuYuChieh/CGhws/blob/master/hw2.html) - Dynamic Drive, Rectangle-Circle Intersection, Dual Viewports ([hw2_module.js](https://github.com/WuYuChieh/CGhws/blob/master/hw2_module.js))
 - [hw3](https://github.com/WuYuChieh/CGhws/blob/master/hw3.html) - Modeling, Multiple Viewports
-- [hw4](https://github.com/WuYuChieh/CGhws/blob/master/hw4.html) - Class, Texture Animation, and Picking
+- [hw4](https://github.com/WuYuChieh/CGhws/blob/master/hw4.html) - Class, Texture Animation, and Picking(Testing)
 
