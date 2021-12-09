@@ -6,5 +6,7 @@
 	- [hw2_module.js](https://github.com/WuYuChieh/CGhws/blob/master/hw2_module.js)
 - [hw3](https://github.com/WuYuChieh/CGhws/blob/master/hw3.html) - Modeling, Multiple Viewports
 - [hw4](https://github.com/WuYuChieh/CGhws/blob/master/hw4.html) - Class, Texture Animation, and Picking(Testing)
-	- no_module.ver(https://github.com/WuYuChieh/test/blob/master/hw4.html)
+  - [hw4_main.js](https://github.com/WuYuChieh/CGhws/blob/master/hw4_main.js)
+  - [hw4_class.js](https://github.com/WuYuChieh/CGhws/blob/master/hw4_class.js)
+  - [no_module.ver](https://github.com/WuYuChieh/test/blob/master/hw4.html)
 
