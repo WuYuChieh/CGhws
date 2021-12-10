@@ -12,9 +12,7 @@ function makeCandles(positionX, positionZ) {
 	var candle = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 15, 32), new THREE.MeshPhongMaterial({
 		color: 0xfa8072,
 	}));
-	candle.position.x = positionX;
-	candle.position.y = 7.5;
-	candle.position.z = positionZ;
+	candle.position.set(positionX, 7.5, positionZ);
 	return candle;
 }
 
@@ -106,7 +104,6 @@ function init() {
 	candlesGroup.push(candle1, candle2, candle3, candle4, candle5);
 	scene.add(ground);
 	setInterval(textureAnimate, 70);
-	//candlesGroup.forEach(function(t){setInterval(t.textureAnimateClass, 70)});
 }
 
 function onWindowResize() {
@@ -118,8 +115,24 @@ function onWindowResize() {
 	renderer.setSize(width, height);
 }
 
-function update(evt) {	///Testimg///
+function update(evt) {	///keyboard.ver///
 
+	if (evt.key == 1) {
+
+		candlesGroup[0].flameOut();
+	}
+	if (evt.key == 2) {
+
+		candlesGroup[1].flameOut();
+	}
+	if (evt.key == 3) {
+
+		candlesGroup[2].flameOut();
+	}
+	if (evt.key == 4) {
+
+		candlesGroup[3].flameOut();
+	}
 	if (evt.key == 5) {
 
 		flameMesh0.material.visible = false;
@@ -127,7 +140,11 @@ function update(evt) {	///Testimg///
 		setTimeout(function() {
 			flameMesh0.material.visible = true;
 			light0.intensity = 0.4;
-		}, 2500);
+		}, 2000);
+	}
+	if (evt.key == 6) {
+
+		candlesGroup[4].flameOut();
 	}
 }
 
@@ -147,7 +164,7 @@ function animate() {
     cameraRoot.y = 0;
 	if (candle0 !== undefined)
 		candle0.lookAt(cameraRoot);
-	//candlesGroup.forEach(function(t){t.lookAt(cameraRoot)});
+	candlesGroup.forEach(function(t){t.candle.children[0].lookAt(cameraRoot)});
 }
 
 function render() {
