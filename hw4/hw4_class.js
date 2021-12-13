@@ -22,10 +22,7 @@ class Candle {
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat.set (1/3,1/3);
-				texture.offset.set (Math.floor(Math.random()*50%6),2/3);
-				//scene.add (flameMesh);
-				//this.candle = makeCandles(positionX, positionZ);
-				//scene.add(this.body);				
+				texture.offset.set (Math.floor(Math.random()*50%6),2/3);				
 				body.add(flameMesh);
 			},
 			undefined,
@@ -36,7 +33,6 @@ class Candle {
 		
 		body.position.set(positionX, 7.5, positionZ);
 		this.candle.add(body);
-		//this.body.add(flameMesh);
 		this.light = new THREE.PointLight("white", 0.4);
 		this.light.position.set(positionX, 22, positionZ);
 		
@@ -47,9 +43,7 @@ class Candle {
 	textureAnimate() {
 		
 		this.count = (this.count === undefined) ? 1 : this.count;
-		//console.log(this.candle);
 		if (this.candle.children[0].children[0].material.map!== undefined) {
-			//console.log("1");
 			this.texture = this.candle.children[0].children[0].material.map;
 			this.texture.offset.x += 1/3;
 			
