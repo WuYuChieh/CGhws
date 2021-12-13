@@ -1,7 +1,7 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
 import {scene} from './hw4_main.js';
 
-class Candles {
+class Candle {
 
 	constructor(positionX = 0, positionZ = 0){
 		
@@ -22,7 +22,7 @@ class Candles {
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat.set (1/3,1/3);
-				texture.offset.set (0,2/3);
+				texture.offset.set (Math.floor(Math.random()*50%6),2/3);
 				//scene.add (flameMesh);
 				//this.candle = makeCandles(positionX, positionZ);
 				//scene.add(this.body);				
@@ -41,10 +41,10 @@ class Candles {
 		this.light.position.set(positionX, 22, positionZ);
 		
 		scene.add(this.candle, this.light);
-		this.interval = setInterval(this.textureAnimateClass.bind(this), 70);
+		this.interval = setInterval(this.textureAnimate.bind(this), 70);
 	}	
 	
-	textureAnimateClass() {
+	textureAnimate() {
 		
 		this.count = (this.count === undefined) ? 1 : this.count;
 		//console.log(this.candle);
@@ -76,4 +76,4 @@ class Candles {
 	}
 }
 
-export {Candles};
+export {Candle};
