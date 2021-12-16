@@ -73,10 +73,9 @@ function doPointerDown (event) {
 	
 	if (intersects.length > 0)
 		update(intersects[0].object.name);
-
 }
 
-function update(key) {	///keyboard.ver///
+function update(key) {
 
 	if (key == 1)
 		candles[0].flameOut();

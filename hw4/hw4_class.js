@@ -37,7 +37,6 @@ class Candle {
 		this.light = new THREE.PointLight("white", 0.4);
 		this.light.position.set(positionX, 22, positionZ);
 		
-		
 		scene.add(this.candle, this.light);
 		this.interval = setInterval(this.textureAnimate.bind(this), 65 + Math.random()*10);
 	}	
