@@ -3,7 +3,7 @@ import {scene} from './hw4_main.js';
 
 class Candle {
 
-	constructor(positionX = 0, positionZ = 0){
+	constructor(positionX = 0, positionZ = 0, name){
 		
 		this.candle = new THREE.Group();
 		var body = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 15, 32), new THREE.MeshPhongMaterial({
@@ -19,10 +19,11 @@ class Candle {
 					alphaTest:0.5
 				}));
 				flameMesh.position.set(0, 11.5, 0);
+				flameMesh.name = name;
 				texture.wrapS = THREE.RepeatWrapping;
 				texture.wrapT = THREE.RepeatWrapping;
 				texture.repeat.set (1/3,1/3);
-				texture.offset.set (Math.floor(Math.random()*50%6),2/3);				
+				texture.offset.set (Math.floor(Math.random()*100),2/3);				
 				body.add(flameMesh);
 			},
 			undefined,
@@ -36,8 +37,9 @@ class Candle {
 		this.light = new THREE.PointLight("white", 0.4);
 		this.light.position.set(positionX, 22, positionZ);
 		
+		
 		scene.add(this.candle, this.light);
-		this.interval = setInterval(this.textureAnimate.bind(this), 70);
+		this.interval = setInterval(this.textureAnimate.bind(this), 65 + Math.random()*10);
 	}	
 	
 	textureAnimate() {
@@ -56,15 +58,13 @@ class Candle {
 	
 	flameOut() {
 		
-		console.log(this.candle);
 		this.light.intensity = 0;
 		this.candle.children[0].children[0].material.visible = false;
-		setTimeout(this.ignition.bind(this), 2000);
+		setTimeout(this.ignition.bind(this), Math.floor(Math.random()*2500));
 	}
 	
 	ignition() {
-		
-		console.log(this.candle);
+
 		this.candle.children[0].children[0].material.visible = true;
 		this.light.intensity = 0.4;
 	}

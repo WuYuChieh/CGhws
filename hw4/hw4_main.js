@@ -4,7 +4,8 @@ import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitCo
 import { Candle } from './hw4_class.js';
 
 var camera, scene, renderer;
-var candles = [];
+var raycaster, mouseLoc;
+var pickables = [], candles = [];
 
 function init() {
 	
@@ -23,8 +24,7 @@ function init() {
 	//scene.add(axes);
 
 	camera = new THREE.PerspectiveCamera(35, width / height, 1, 10000);
-	camera.position.set(0, 10, 200);
-	camera.position.set(150, 100, 0);
+	camera.position.set(150, 70, 0);
 	
 	let controls = new OrbitControls(camera, renderer.domElement);
 	
@@ -37,14 +37,19 @@ function init() {
 	}));
 	ground.rotation.x = -Math.PI / 2;
 	
-	var candle0 = new Candle(0, 0);
-	var candle1 = new Candle(-40, 40);
-	var candle2 = new Candle(-40, 0);
-	var candle3 = new Candle(-40, -40);
-	var candle4 = new Candle(0, 40);
-	var candle5 = new Candle(0, -40);
+	var candle0 = new Candle(-40, 40, 1);
+	var candle1 = new Candle(-40, 0, 2);
+	var candle2 = new Candle(-40, -40, 3);
+	var candle3 = new Candle(0, 40, 4);
+	var candle4 = new Candle(0, 0, 5);
+	var candle5 = new Candle(0, -40, 6);
 	candles.push(candle0, candle1, candle2, candle3, candle4, candle5);
+	pickables.push(candle0.candle, candle1.candle, candle2.candle, candle3.candle, candle4.candle, candle5.candle);
 	scene.add(ground);
+	
+	raycaster = new THREE.Raycaster();
+	mouseLoc = new THREE.Vector2();
+	document.addEventListener ('pointerdown', doPointerDown, false);
 }
 
 function onWindowResize() {
@@ -56,40 +61,38 @@ function onWindowResize() {
 	renderer.setSize(width, height);
 }
 
-function update(evt) {	///keyboard.ver///
+function doPointerDown (event) {
+	
+	event.preventDefault();
+	
+	mouseLoc.x = (event.clientX / window.innerWidth) * 2 - 1;
+	mouseLoc.y = -(event.clientY / window.innerHeight) * 2 + 1;
+	
+	raycaster.setFromCamera (mouseLoc, camera);
+	var intersects = raycaster.intersectObjects (pickables);
+	
+	if (intersects.length > 0)
+		update(intersects[0].object.name);
 
-	if (evt.key == 1) {
+}
 
+function update(key) {	///keyboard.ver///
+
+	if (key == 1)
 		candles[0].flameOut();
-	}
-	if (evt.key == 2) {
-
+	if (key == 2)
 		candles[1].flameOut();
-	}
-	if (evt.key == 3) {
-
+	if (key == 3)
 		candles[2].flameOut();
-	}
-	if (evt.key == 4) {
-
+	if (key == 4)
 		candles[3].flameOut();
-	}
-	if (evt.key == 5) {
-
+	if (key == 5)
 		candles[4].flameOut();
-	}
-	if (evt.key == 6) {
-
+	if (key == 6)
 		candles[5].flameOut();
-	}
 }
 
 function animate() {
-	
-	window.onkeydown = function(evt){
-		var evt = window.event?window.event:evt;
-		update(evt);
-	}
 	
 	requestAnimationFrame(animate);
 	render();
