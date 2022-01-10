@@ -69,8 +69,8 @@ function doPointerDown (event) {
 	mouseLoc.y = -(event.clientY / window.innerHeight) * 2 + 1;
 	
 	raycaster.setFromCamera (mouseLoc, camera);
-	var intersects = raycaster.intersectObjects (pickables);
-	
+	var intersects = raycaster.intersectObjects(pickables);
+
 	if (intersects.length > 0)
 		update(intersects[0].object.name);
 }
@@ -98,7 +98,7 @@ function animate() {
 	
 	let cameraRoot = camera.position.clone();
     cameraRoot.y = 0;
-	candles.forEach(function(t){t.candle.children[0].lookAt(cameraRoot)});
+	candles.forEach(function(t){t.candle.children[0].children[0].lookAt(cameraRoot)});
 }
 
 function render() {

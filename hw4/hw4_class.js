@@ -34,7 +34,7 @@ class Candle {
 		
 		body.position.set(positionX, 7.5, positionZ);
 		this.candle.add(body);
-		this.light = new THREE.PointLight("white", 0.4);
+		this.light = new THREE.PointLight("white", 0.3);
 		this.light.position.set(positionX, 22, positionZ);
 		
 		scene.add(this.candle, this.light);
@@ -65,7 +65,7 @@ class Candle {
 	ignition() {
 
 		this.candle.children[0].children[0].material.visible = true;
-		this.light.intensity = 0.4;
+		this.light.intensity = 0.3;
 	}
 }
 
