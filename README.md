@@ -12,5 +12,6 @@
 - hw5 - Shader, Render-to-texture, module
 	- [Version 1](https://github.com/WuYuChieh/CGhws/blob/master/hw5/hw5_Version_1.html)
 		- [main.js](https://github.com/WuYuChieh/CGhws/blob/master/hw5/hw5_Version_1_main.js)
-	- Version 2
+	- [Version 2](https://github.com/WuYuChieh/CGhws/blob/master/hw5/hw5_Version_2.html)
+		- [main.js](https://github.com/WuYuChieh/CGhws/blob/master/hw5/hw5_Version_2_main.js)
 	
