@@ -1,6 +1,6 @@
-import * as THREE from "https://threejs.org/build/three.module.js";
-import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
-import { TeapotGeometry } from "https://threejs.org/examples/jsm/geometries/TeapotGeometry.js";
+import * as THREE from 'three';
+import { OrbitControls } from 'controls';
+import { TeapotGeometry } from 'teapot';
 
 var scene, renderer, camera;
 var pointLight, angle = 0, meshs = [];

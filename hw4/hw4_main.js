@@ -1,6 +1,5 @@
-import * as THREE from "https://threejs.org/build/three.module.js";
-import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
-
+import * as THREE from 'three';
+import { OrbitControls } from 'controls';
 import { Candle } from './hw4_class.js';
 
 var camera, scene, renderer;
@@ -98,7 +97,10 @@ function animate() {
 	
 	let cameraRoot = camera.position.clone();
     cameraRoot.y = 0;
-	candles.forEach(function(t){t.candle.children[0].children[0].lookAt(cameraRoot)});
+	candles.forEach(function(t){
+		if (t.candle.children[0].children[0] !== undefined)	
+			t.candle.children[0].children[0].lookAt(cameraRoot);
+		});
 }
 
 function render() {

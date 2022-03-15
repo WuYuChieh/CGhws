@@ -15,19 +15,27 @@ body {
 	overflow: hidden;
 }
 </style>
+<script type="importmap">
+{
+    "imports": {
+        "three": "./build/three.module.js",
+		"controls": "./OrbitControls.js"
+    }
+}
+</script>
 </head>
 <body>
 <div id="info">
 	<h1>Homework 4 - Class, Texture Animation, and Picking</h1>
 </div>
-
 <script type="module">
 
-	import {init, animate} from "./hw4_main.js";
+	import {init, animate} from './hw4_main.js';
 
 	init();
 	animate();
 </script>
+
 
 </body>
 </html>
