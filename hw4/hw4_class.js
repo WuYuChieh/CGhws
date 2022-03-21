@@ -44,18 +44,15 @@ class Candle {
 	textureAnimate() {
 		
 		this.count = (this.count === undefined) ? 1 : this.count;
-		if (this.candle.children[0].children[0].material!==undefined) {
-			if (this.candle.children[0].children[0].material.map!== undefined) {
-				this.texture = this.candle.children[0].children[0].material.map;
-				this.texture.offset.x += 1/3;
-			
-				if (this.count % 3 === 0) {
-					this.texture.offset.y -= 1/3;
-				}
-				this.count++;
-			}
-		}
+		if (this.candle.children[0].children[0].material.map!== undefined) {
+			this.texture = this.candle.children[0].children[0].material.map;
+			this.texture.offset.x += 1/3;
 		
+			if (this.count % 3 === 0) {
+				this.texture.offset.y -= 1/3;
+			}
+			this.count++;
+		}		
 	}
 	
 	flameOut() {
